@@ -12,13 +12,9 @@ jobs:
   build-and-upload:
     runs-on: ubuntu-latest
     steps:
+       - uses: actions/checkout@v2
 
-#  check-bats-version:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - run: echo "this is pen"
-
-# GoogleDriveにアップロードするファイルが入るディレクトリ作成
+# Google Driveにアップロードするファイルが入るディレクトリ作成
        - run: |
          mkdir upload
          find . -name "*.pdf" | xargs -I{} sh -c 'mkdir -p $(dirname {}); cp "{}" $(dirname "upload/{}")'
