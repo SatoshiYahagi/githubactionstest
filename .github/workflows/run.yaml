@@ -1,7 +1,53 @@
+# test work file
+
+#  GitHub リポジトリの Actions ページで表示されるワークフローの名前
 name: learn-github-actions
+
+# トリガーアクション
 on: [push]
+
 jobs:
-  check-bats-version:
+
+# ジョブの名前
+  build-and-upload:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "this is pen"
+
+#  check-bats-version:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - run: echo "this is pen"
+
+# GoogleDriveにアップロードするファイルが入るディレクトリ作成
+       - run: |
+         mkdir upload
+         find . -name "*.pdf" | xargs -I{} sh -c 'mkdir -p $(dirname {}); cp "{}" $(dirname "upload/{}")'
+
+# テスト用ファイルを作成ディレクトリに配置
+       - name: Upload file create
+         id: file_create
+         run: echo "##[set-output name=branch;]$(echo upload_test. > upload/UploadTest.txt)"
+
+# Google Drive へのアップロード
+       - name: Upload to Google Drive
+         uses: satackey/action-google-drive@v1
+         with:
+           skicka-tokencache-json: ${{ secrets.SKICKA_TOKENCACHE_JSON }}
+           upload-from: ./upload
+           upload-to: /path/to/upload
+
+# For those who set up Google Drive API client ID and secret themselves
+#           google-client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+#           google-client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+# Google Drive からのダウンロード
+#       - name: Download from Google Drive
+#         uses: satackey/action-google-drive@v1
+#         with:
+#           skicka-tokencache-json: ${{ secrets.SKICKA_TOKENCACHE_JSON }}
+#           download-from: /path/to/download
+#           download-to: ./
+#
+# For those who set up Google Drive API client ID and secret themselves
+#           google-client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+#           google-client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
