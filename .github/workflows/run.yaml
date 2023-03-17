@@ -16,8 +16,8 @@ jobs:
 
 # Google Driveにアップロードするファイルが入るディレクトリ作成
        - run: |
-         mkdir upload
-         find . -name "*.pdf" | xargs -I{} sh -c 'mkdir -p $(dirname {}); cp "{}" $(dirname "upload/{}")'
+           mkdir upload
+           find . -name "*.pdf" | xargs -I{} sh -c 'mkdir -p $(dirname {}); cp "{}" $(dirname "upload/{}")'
 
 # テスト用ファイルを作成ディレクトリに配置
        - name: Upload file create
