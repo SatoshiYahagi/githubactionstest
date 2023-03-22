@@ -3,35 +3,58 @@
 #  GitHub リポジトリの Actions ページで表示されるワークフローの名前
 name: learn-github-actions
 
-# トリガーアクション
+# トリガーアクション（対象ブランチ指定はなし）
 on: [push]
 
 jobs:
 
 # ジョブの名前
-  build-and-upload:
-    runs-on: ubuntu-latest
+  build:
+    # セルフホストランナーで実行
+    runs-on: self-hosted
     steps:
-       - uses: actions/checkout@v2
+       - name: Checkout
+         uses: actions/checkout@v2
+         # リポジトリのチェックアウト時にLibraryフォルダ等を消さないよう「clean: false」
+         # Git LFSを使用している場合は 「lfs: true」が必要
+         with:
+           lfs: true
+           clean: false
 
-# Google Driveにアップロードするファイルが入るディレクトリ作成
+       # 1 つのセルフホスト ランナーは、一度に 1 つのジョブしか実行できません。
+       # 使用可能なランナーがアイドル状態でない場合、後続のジョブは、使用可能なランナーがアイドル状態になるまでキューに入れられます。
+       # 同じマシンに複数のランナーを置きたい場合は、異なるユーザーで実行できます。
+       #  https://github.com/orgs/community/discussions/26769
+       - name: Unity Build
+         shell: cmd
+         run: |
+           "/Applications/Unity/2021.2.17f1" -quit -batchmode -projectPath . -executeMethod CI.Build -buildTarget Android -setDefaultPlatformTextureFormat astc -nographics -logFile -
+
+       # Copy-Item でビルドされた .apk ファイルを確保しています。コピー先フォルダを適当に変更してください。
+       - name: Release
+         run: Copy-Item Build\Application.apk D:\Builds\Application${{ github.run_number }}.apk
+
+  upload:
+    # 最新のubuntuで実行？
+    runs-on: ubuntu-latest
+       # Google Driveにアップロードするファイルが入るディレクトリ作成
        - run: |
            mkdir upload
            find . -name "*.pdf" | xargs -I{} sh -c 'mkdir -p $(dirname {}); cp "{}" $(dirname "upload/{}")'
 
-# テスト用ファイルを作成ディレクトリに配置
+       # テスト用ファイルを作成ディレクトリに配置
        - name: Upload file create
          id: file_create
          run: echo "##[set-output name=branch;]$(echo upload_test. > upload/UploadTest.txt)"
 
-# Google Drive へのアップロード
+       # Google Drive へのアップロード
        - name: Upload to Google Drive
          uses: satackey/action-google-drive@v1
          with:
            skicka-tokencache-json: ${{ secrets.SKICKA_TOKENCACHE_JSON }}
            upload-from: ./upload
            upload-to: /path/to
-# For those who set up Google Drive API client ID and secret themselves
+         # For those who set up Google Drive API client ID and secret themselves
            google-client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
            google-client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
