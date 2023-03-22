@@ -37,6 +37,7 @@ jobs:
   upload:
     # 最新のubuntuで実行？
     runs-on: ubuntu-latest
+    steps:
        # Google Driveにアップロードするファイルが入るディレクトリ作成
        - run: |
            mkdir upload
