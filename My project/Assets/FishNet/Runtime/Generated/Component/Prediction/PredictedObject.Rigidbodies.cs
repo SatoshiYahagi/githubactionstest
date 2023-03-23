@@ -94,12 +94,14 @@ namespace FishNet.Component.Prediction
             if (_graphicalAnimators.Length > 0)
             {
                 for (int i = 0; i < _graphicalAnimators.Length; i++)
-                    _graphicalAnimators[i].keepAnimatorStateOnDisable = true;
+                    _graphicalAnimators[i].keepAnimatorControllerStateOnDisable = true;
+                    //_graphicalAnimators[i].keepAnimatorStateOnDisable = true;
 
-                /* True if at least one animator is on the graphical root. 
-                * Unity gets components in order so it's safe to assume
-                 * 0 would be the topmost animator. This has to be done
-                 * to prevent animation jitter when pausing the rbs. */
+
+                    /* True if at least one animator is on the graphical root. 
+                    * Unity gets components in order so it's safe to assume
+                     * 0 would be the topmost animator. This has to be done
+                     * to prevent animation jitter when pausing the rbs. */
                 if (_graphicalAnimators[0].transform == _graphicalObject)
                 {
                     Transform graphicalHolder = new GameObject().transform;
