@@ -32,7 +32,7 @@ jobs:
        - name: Unity Build
          shell: cmd
          run: |
-           open ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app -quit -batchmode -projectPath . -executeMethod Builder.BuildAndroid -buildTarget Android -setDefaultPlatformTextureFormat astc -nographics -logFile ./buildoutput.log
+           ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath . -executeMethod Builder.BuildAndroid -buildTarget Android -setDefaultPlatformTextureFormat astc -nographics -logFile ./buildoutput.log
 
        # Copy-Item (※PowerShell用コマンド) でビルドされた .apk ファイルを確保しています。コピー先フォルダを適当に変更してください。
        - name: Release
