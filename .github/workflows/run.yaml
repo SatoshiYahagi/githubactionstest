@@ -33,7 +33,7 @@ env:
        - name: Unity Build
          shell: cmd
          run: |
-           $BUILD_SERVER_UNITY_PATH -quit -batchmode -projectPath . -executeMethod AutomaticBuild.BuildAndroid -buildTarget Android -setDefaultPlatformTextureFormat astc -nographics -logFile ./buildoutput.log
+           $BUILD_SERVER_UNITY_PATH -quit -batchmode -projectPath . -executeMethod Builder.BuildAndroid -buildTarget Android -setDefaultPlatformTextureFormat astc -nographics -logFile ./buildoutput.log
 
        # Copy-Item (※PowerShell用コマンド) でビルドされた .apk ファイルを確保しています。コピー先フォルダを適当に変更してください。
        - name: Release
