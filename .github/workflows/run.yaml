@@ -32,7 +32,7 @@ jobs:
        # 同じマシンに複数のランナーを置きたい場合は、異なるユーザーで実行できます。
        #  https://github.com/orgs/community/discussions/26769
        - name: Unity Build
-         shell: cmd
+         shell: bash
          run: ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app/Contents/MacOS/Unity -quit -batchmode -nographics -projectPath ${{ env.BUILD_SERVER_PROJECT_PATH }} -executeMethod Builder.BuildAndroid Android
 
        # Copy-Item (※PowerShell用コマンド) でビルドされた .apk ファイルを確保しています。コピー先フォルダを適当に変更してください。
