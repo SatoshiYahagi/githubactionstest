@@ -10,7 +10,7 @@ env:
   # ビルドサーバでビルドに使用する Unity.exe の格納パス
   BUILD_SERVER_UNITY_PATH: /Applications/Unity/2021.2.17f1
   # ビルドサーバでビルド対象となるプロジェクトのパス
-  BUILD_SERVER_PROJECT_PATH: "/Users/unity-build/project/GithubActionsBuildProto/GitHubActionsTest/My project"
+  BUILD_SERVER_PROJECT_PATH: \"/Users/unity-build/project/GithubActionsBuildProto/GitHubActionsTest/My project\"
 
 jobs:
 # ジョブの名前
