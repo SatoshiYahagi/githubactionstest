@@ -66,7 +66,7 @@ jobs:
 #         # For those who set up Google Drive API client ID and secret themselves
 #           google-client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
 #           google-client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-
+#
 # Google Drive からのダウンロード
 #       - name: Download from Google Drive
 #         uses: satackey/action-google-drive@v1
