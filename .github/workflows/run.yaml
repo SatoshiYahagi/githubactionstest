@@ -9,6 +9,8 @@ on: [push]
 env:
   # ビルドサーバでビルドに使用する Unity.exe の格納パス
   BUILD_SERVER_UNITY_PATH: /Applications/Unity/2021.2.17f1
+  # ビルドサーバでビルド対象となるプロジェクトのパス
+  BUILD_SERVER_PROJECT_PATH: /Users/unity-build/project/GithubActionsBuildProto
 
 jobs:
 # ジョブの名前
@@ -32,7 +34,7 @@ jobs:
        - name: Unity Build
          shell: cmd
          run: |
-           ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app/Contents/MacOS/Unity -quit -batchmode -nographics -projectPath . -executeMethod Builder.BuildAndroid Android
+           ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app/Contents/MacOS/Unity -quit -batchmode -nographics -projectPath ${{ env.BUILD_SERVER_PROJECT_PATH }} -executeMethod Builder.BuildAndroid Android
 
        # Copy-Item (※PowerShell用コマンド) でビルドされた .apk ファイルを確保しています。コピー先フォルダを適当に変更してください。
        - name: Release
