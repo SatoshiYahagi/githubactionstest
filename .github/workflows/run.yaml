@@ -8,7 +8,7 @@ on: [push]
 
 env:
   # ビルドサーバでビルドに使用する Unity.exe の格納パス
-  BUILD_SERVER_UNITY_PATH:/Applications/Unity/2021.2.17f1
+  BUILD_SERVER_UNITY_PATH: /Applications/Unity/2021.2.17f1
 
 jobs:
 # ジョブの名前
