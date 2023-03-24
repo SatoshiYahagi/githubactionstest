@@ -16,14 +16,14 @@ jobs:
     # セルフホストランナーで実行
     runs-on: self-hosted
     steps:
-       #- name: Checkout
-       #  #チェックアウト操作自体を行うなら不要？
-       #  uses: actions/checkout@v2
-       #  # リポジトリのチェックアウト時にLibraryフォルダ等を消さないよう「clean: false」
-       #  # Git LFSを使用している場合は 「lfs: true」が必要
-       #  with:
-       #    lfs: true
-       #    clean: false
+       - name: Checkout
+         uses: actions/checkout@v2
+         # リポジトリのチェックアウト時にLibraryフォルダ等を消さないよう「clean: false」
+         # Git LFSを使用している場合は 「lfs: true」が必要
+         with:
+           fetch-depth: 0
+           lfs: true
+           clean: false
 
        # 1 つのセルフホスト ランナーは、一度に 1 つのジョブしか実行できません。
        # 使用可能なランナーがアイドル状態でない場合、後続のジョブは、使用可能なランナーがアイドル状態になるまでキューに入れられます。
