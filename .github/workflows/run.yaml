@@ -19,7 +19,7 @@ jobs:
     runs-on: self-hosted
     steps:
        - name: Checkout
-         uses: actions/checkout@v2
+         uses: actions/checkout@v3
          # リポジトリのチェックアウト時にLibraryフォルダ等を消さないよう「clean: false」
          # Git LFSを使用している場合は 「lfs: true」が必要
          with:
@@ -27,10 +27,20 @@ jobs:
            lfs: true
            clean: false
 
+       # 最新の状態をプル
+       - name: Pull Latest
+         shell: bash
+         run: |
+           cd ${{ env.BUILD_SERVER_PROJECT_PATH }}
+           git pull
+
        # 1 つのセルフホスト ランナーは、一度に 1 つのジョブしか実行できません。
        # 使用可能なランナーがアイドル状態でない場合、後続のジョブは、使用可能なランナーがアイドル状態になるまでキューに入れられます。
        # 同じマシンに複数のランナーを置きたい場合は、異なるユーザーで実行できます。
        #  https://github.com/orgs/community/discussions/26769
+       #
+       # 要：ビルドサーバでのUnityライセンス認証
+       #
        - name: Unity Build
          shell: bash
          run: ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app/Contents/MacOS/Unity -quit -batchmode -nographics -projectPath ${{ env.BUILD_SERVER_PROJECT_PATH }} -executeMethod Builder.BuildAndroid Android
