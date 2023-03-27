@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 public class Builder
 {
     // 共通設定
+    const string outputFolder = "BuildFiles"; // 出力先フォルダ
+
     // 開発用
 
     // iOS設定
@@ -192,7 +194,8 @@ public class Builder
         foreach (Group group in match.Groups)
             Debug.Log("[Builder] AddExpand : " + group.Value);
 
-        string outputPath = packagingPart + "_" +  DateTime.Now.ToString("yyyyMMdd_HH") + "_";
+        string outputPath = "./" + outputFolder + "/";
+        outputPath += packagingPart + "_" +  DateTime.Now.ToString("yyyyMMdd_HH") + "_";
         switch (buildTarget)
         {
             case BuildTarget.Android:
