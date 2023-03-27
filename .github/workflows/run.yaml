@@ -11,6 +11,13 @@ env:
   BUILD_SERVER_UNITY_PATH: /Applications/Unity/2021.2.17f1
   # ビルドサーバでビルド対象となるプロジェクトのパス
   BUILD_SERVER_PROJECT_PATH: '"/Users/unity-build/project/GithubActionsBuildProto/GitHubActionsTest/My project"'
+  # ビルドファイルが格納される一時フォルダの名前
+  BUILD_FILE_INCLUDE_FOLDER: BuildFiles
+  # アップロード先の GoogleDriveフォルダパス
+  GOOGLE_DRIVE_UPLOAD_FOLDER: path/to
+  # ビルドサーバで実行する rclone コマンドにて使用する設定の名前
+  # https://rclone.org/drive/#standard-options
+  RCLONE_USE_CONFIGURE_NAME: gdrive
 
 jobs:
 # ジョブの名前
@@ -26,28 +33,40 @@ jobs:
            fetch-depth: 0
            lfs: true
            clean: false
-
-       # 最新の状態をプル
-       - name: Pull Latest
+       
+       - name: Build
          shell: bash
+         # BashSellスクリプト形式で定義
          run: |
            cd ${{ env.BUILD_SERVER_PROJECT_PATH }}
+           
+           # 最新の状態をプル
            git pull
 
-       # 1 つのセルフホスト ランナーは、一度に 1 つのジョブしか実行できません。
-       # 使用可能なランナーがアイドル状態でない場合、後続のジョブは、使用可能なランナーがアイドル状態になるまでキューに入れられます。
-       # 同じマシンに複数のランナーを置きたい場合は、異なるユーザーで実行できます。
-       #  https://github.com/orgs/community/discussions/26769
-       #
-       # 要：ビルドサーバでのUnityライセンス認証
-       #
-       - name: Unity Build
-         shell: bash
-         run: ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app/Contents/MacOS/Unity -quit -batchmode -nographics -projectPath ${{ env.BUILD_SERVER_PROJECT_PATH }} -executeMethod Builder.BuildAndroid Android
-
-       # Copy-Item (※PowerShell用コマンド) でビルドされた .apk ファイルを確保しています。コピー先フォルダを適当に変更してください。
-       #- name: Release
-       #  run: Copy-Item Build\Application.apk D:\Builds\Application${{ github.run_number }}.apk
+           # 1 つのセルフホスト ランナーは、一度に 1 つのジョブしか実行できません。
+           # 使用可能なランナーがアイドル状態でない場合、後続のジョブは、使用可能なランナーがアイドル状態になるまでキューに入れられます。
+           # 同じマシンに複数のランナーを置きたい場合は、異なるユーザーで実行できます。
+           #  https://github.com/orgs/community/discussions/26769
+           #
+           # 要：ビルドサーバでのUnityライセンス認証
+           #
+           ${{ env.BUILD_SERVER_UNITY_PATH }}/Unity.app/Contents/MacOS/Unity -quit -batchmode -nographics -projectPath ${{ env.BUILD_SERVER_PROJECT_PATH }} -executeMethod Builder.BuildAndroid Android
+           
+           # ビルドしたapkファイル名を取得（格納フォルダ内の最新1件のみを取得）
+           BUILD_FILE_NAME=`ls -rt ./${{ env.BUILD_FILE_INCLUDE_FOLDER }}/*.apk | tail -n 1 | sed -E "s/^.*\\/([^\\/]*\\.apk)$/\\1/"`
+       
+           # ビルド結果のアップロード
+           rclone --drive-shared-with-me copy "./${{ env.BUILD_FILE_INCLUDE_FOLDER }}/${BUILD_FILE_NAME}" ${{ env.RCLONE_USE_CONFIGURE_NAME }}:${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}
+           
+           # アップロードファイルのJson情報からIDを取得
+           GOOGLE_DRIVE_ID=`rclone lsjson ${{ env.RCLONE_USE_CONFIGURE_NAME }}:"${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}/${BUILD_FILE_NAME}" | sep -E "s/\\"ID\\":\\"(.+)\\"\\}/\\1/"`
+           
+           #
+           echo ${GOOGLE_DRIVE_ID} 
+           
+           # ビルドファイル格納フォルダを削除
+           #rm -rf ./${{ env.BUILD_FILE_INCLUDE_FOLDER }}
+       
 
 #  upload:
 #    # 最新のubuntuで実行？
