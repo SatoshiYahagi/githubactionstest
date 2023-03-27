@@ -59,7 +59,7 @@ jobs:
            rclone --drive-shared-with-me copy "./${{ env.BUILD_FILE_INCLUDE_FOLDER }}/${BUILD_FILE_NAME}" ${{ env.RCLONE_USE_CONFIGURE_NAME }}:${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}
            
            # アップロードファイルのJson情報からIDを取得
-           GOOGLE_DRIVE_ID=`rclone lsjson ${{ env.RCLONE_USE_CONFIGURE_NAME }}:"${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}/${BUILD_FILE_NAME}" | sed -E "s/\\"ID\\":\\"(.+)\\"\\}/\\1/"`
+           GOOGLE_DRIVE_ID=`rclone lsjson ${{ env.RCLONE_USE_CONFIGURE_NAME }}:"${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}/${BUILD_FILE_NAME}" | sed -E "s/.*\\"ID\\":\\"(.+)\\"\\}.*/\\1/"`
            
            #
            echo ${GOOGLE_DRIVE_ID} 
