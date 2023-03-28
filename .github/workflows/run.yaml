@@ -63,7 +63,8 @@ jobs:
            rclone --drive-shared-with-me copy "./${{ env.BUILD_FILE_INCLUDE_FOLDER }}/${BUILD_FILE_NAME}" ${{ env.RCLONE_USE_CONFIGURE_NAME }}:${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}
            
            # アップロードファイルのJson情報からIDを取得
-           GOOGLE_DRIVE_ID=`rclone lsjson ${{ env.RCLONE_USE_CONFIGURE_NAME }}:"${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}/${BUILD_FILE_NAME}" | sed -E "s/\\n//" | sed -E "s/.*\\"ID\\":\\"(.+)\\"\\}.*/\\1/"`
+           GOOGLE_DRIVE_ID=`rclone lsjson ${{ env.RCLONE_USE_CONFIGURE_NAME }}:"${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}/${BUILD_FILE_NAME}"`
+           GOOGLE_DRIVE_ID=`echo ${GOOGLE_DRIVE_ID} | sed -E "s/.*\\"ID\\":\\"(.+)\\"\\}.*/\\1/"`
            echo ${GOOGLE_DRIVE_ID}
            
            # IDからURLを作成
@@ -74,8 +75,8 @@ jobs:
            # 
            # 要：ChatworkAPIトークンの環境変数への設定
            #
-           SEND_MESSAGE=`echo -e apkファイルがアップロードされました。"\n"${FILE_URL}`
-           echo -e ${SEND_MESSAGE}
+           SEND_MESSAGE=`echo -E apkファイルがアップロードされました。"\n"${FILE_URL}`
+           echo -E ${SEND_MESSAGE}
            curl --request POST \
                 --url https://api.chatwork.com/v2/rooms/${{ env.CHATWORK_ROOM_ID }}/messages \
                 --header 'accept: application/json' \
