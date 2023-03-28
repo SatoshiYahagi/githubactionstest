@@ -73,6 +73,7 @@ jobs:
            # 要：ChatworkAPIトークンの環境変数への設定
            #
            SEND_MESSAGE="apkファイルがアップロードされました。"\n${FILE_URL}
+           echo -e ${SEND_MESSAGE}
            curl --request POST \
                 --url https://api.chatwork.com/v2/rooms/${{ env.CHATWORK_ROOM_ID }}/messages \
                 --header 'accept: application/json' \
