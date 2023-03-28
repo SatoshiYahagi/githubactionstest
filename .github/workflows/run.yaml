@@ -74,16 +74,13 @@ jobs:
            # 要：ChatworkAPIトークンの環境変数への設定
            #
            SEND_MESSAGE=`echo -e apkファイルがアップロードされました。"\n"${FILE_URL}`
-           #echo -e ${SEND_MESSAGE}
-           #echo ${CHATWORK_API_TOKEN}
-           SEND_MESSAGE="${FILE_URL}"
            curl --request POST \
                 --url https://api.chatwork.com/v2/rooms/${{ env.CHATWORK_ROOM_ID }}/messages \
                 --header 'accept: application/json' \
                 --header 'content-type: application/x-www-form-urlencoded' \
-                --header 'x-chatworktoken: ${CHATWORK_API_TOKEN}' \
+                --header "x-chatworktoken: ${CHATWORK_API_TOKEN}" \
                 --data self_unread=0 \
-                --data 'body=${SEND_MESSAGE}'
+                --data "body=${SEND_MESSAGE}"
            
            # ビルドファイル格納フォルダを削除
            rm -rf ./${{ env.BUILD_FILE_INCLUDE_FOLDER }}
