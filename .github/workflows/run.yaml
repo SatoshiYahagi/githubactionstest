@@ -14,8 +14,6 @@ env:
   # ビルドファイルが格納される一時フォルダの名前
   # （ビルド用Unityスクリプト内で定義した出力先フォルダ）
   BUILD_FILE_INCLUDE_FOLDER: BuildFiles
-  # アップロード先の GoogleDriveフォルダパス
-  #GOOGLE_DRIVE_UPLOAD_FOLDER: path/to
   # アップロード先の GoogleDriveフォルダID
   # ※サーバ側で clone コマンドにて事前設定？
   #GOOGLE_DRIVE_UPLOAD_FOLDER_ID: 
