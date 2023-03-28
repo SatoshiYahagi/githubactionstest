@@ -65,11 +65,9 @@ jobs:
            # アップロードファイルのJson情報からIDを取得
            GOOGLE_DRIVE_ID=`rclone lsjson ${{ env.RCLONE_USE_CONFIGURE_NAME }}:"${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}/${BUILD_FILE_NAME}"`
            GOOGLE_DRIVE_ID=`echo ${GOOGLE_DRIVE_ID} | sed -E "s/.*\\"ID\\":\\"(.+)\\"\\}.*/\\1/"`
-           echo ${GOOGLE_DRIVE_ID}
            
            # IDからURLを作成
            FILE_URL=`echo "${{ env.GOOGLE_DRIVE_URL_TEMPLATE }}" | sed -E "s/\\|\\|FILE_ID\\|\\|/${GOOGLE_DRIVE_ID}/"`
-           echo ${FILE_URL}
            
            # Chatwork へ通知メッセージを送信
            # 
@@ -77,6 +75,7 @@ jobs:
            #
            SEND_MESSAGE=`echo -e apkファイルがアップロードされました。"\n"${FILE_URL}`
            echo -e ${SEND_MESSAGE}
+           echo ${CHATWORK_API_TOKEN}
            curl --request POST \
                 --url https://api.chatwork.com/v2/rooms/${{ env.CHATWORK_ROOM_ID }}/messages \
                 --header 'accept: application/json' \
