@@ -16,8 +16,12 @@ env:
   # アップロード先の GoogleDriveフォルダパス
   GOOGLE_DRIVE_UPLOAD_FOLDER: path/to
   # ビルドサーバで実行する rclone コマンドにて使用する設定の名前
-  # https://rclone.org/drive/#standard-options
+  #  https://rclone.org/drive/#standard-options
   RCLONE_USE_CONFIGURE_NAME: gdrive
+  # GoogleDriveの共有リンクのテンプレート
+  GOOGLE_DRIVE_URL_TEMPLATE: https://drive.google.com/file/d/||FILE_ID||/view?usp=share_link
+  # ビルド通知メッセージ送信先のChatworkルームID
+  CHATWORK_ROOM_ID: 293155348
 
 jobs:
 # ジョブの名前
@@ -61,49 +65,21 @@ jobs:
            # アップロードファイルのJson情報からIDを取得
            GOOGLE_DRIVE_ID=`rclone lsjson ${{ env.RCLONE_USE_CONFIGURE_NAME }}:"${{ env.GOOGLE_DRIVE_UPLOAD_FOLDER }}/${BUILD_FILE_NAME}" | sed -E "s/.*\\"ID\\":\\"(.+)\\"\\}.*/\\1/"`
            
+           # IDからURLを作成
+           FILE_URL=`echo ${{ env.GOOGLE_DRIVE_URL_TEMPLATE }} | sed -E "s/\|\|FILE_ID\|\|/${GOOGLE_DRIVE_ID}/"`
+           
+           # Chatwork へ通知メッセージを送信
+           # 
+           # 要：ChatworkAPIトークンの環境変数への設定
            #
-           echo ${GOOGLE_DRIVE_ID} 
+           SEND_MESSAGE="apkファイルがアップロードされました。"\n${FILE_URL}
+           curl --request POST \
+                --url https://api.chatwork.com/v2/rooms/${{ env.CHATWORK_ROOM_ID }}/messages \
+                --header 'accept: application/json' \
+                --header 'content-type: application/x-www-form-urlencoded' \
+                --header 'x-chatworktoken: ${CHATWORK_API_TOKEN}' \
+                --data self_unread=0 \
+                --data 'body=${SEND_MESSAGE}'
            
            # ビルドファイル格納フォルダを削除
-           #rm -rf ./${{ env.BUILD_FILE_INCLUDE_FOLDER }}
-       
-
-#  upload:
-#    # 最新のubuntuで実行？
-#    runs-on: ubuntu-latest
-#    needs: build
-#    steps:
-#       # Google Driveにアップロードするファイルが入るディレクトリ作成
-#       - run: |
-#           mkdir upload
-#           find . -name "*.pdf" | xargs -I{} sh -c 'mkdir -p $(dirname {}); cp "{}" $(dirname "upload/{}")'
-#
-#       # テスト用ファイルを作成ディレクトリに配置
-#       - name: Upload file create
-#         id: file_create
-#         run: echo "branch=$(echo upload_test. > upload/UploadTest.txt)" >> $GITHUB_OUTPUT
-#       # set-output は非推奨え廃止予定のため書き換え
-#       # run: echo "##[set-output name=branch;]$(echo upload_test. > upload/UploadTest.txt)"
-#
-#       # Google Drive へのアップロード
-#       - name: Upload to Google Drive
-#         uses: satackey/action-google-drive@v1
-#         with:
-#           skicka-tokencache-json: ${{ secrets.SKICKA_TOKENCACHE_JSON }}
-#           upload-from: ./upload
-#           upload-to: /path/to
-#         # For those who set up Google Drive API client ID and secret themselves
-#           google-client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
-#           google-client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-#
-# Google Drive からのダウンロード
-#       - name: Download from Google Drive
-#         uses: satackey/action-google-drive@v1
-#         with:
-#           skicka-tokencache-json: ${{ secrets.SKICKA_TOKENCACHE_JSON }}
-#           download-from: /path/to/download
-#           download-to: ./
-#
-# For those who set up Google Drive API client ID and secret themselves
-#           google-client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
-#           google-client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+           rm -rf ./${{ env.BUILD_FILE_INCLUDE_FOLDER }}
